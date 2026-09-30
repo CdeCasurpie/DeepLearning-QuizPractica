@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deep Learning — Simulador Interactivo</title>
+  <meta name="description" content="Quiz de práctica de Deep Learning con render de fórmulas y métricas finales. 146 preguntas." />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-glow" aria-hidden="true"></div>
+
+  <main class="container">
+    <!-- ============ START SCREEN ============ -->
+    <section id="screen-start" class="screen active">
+      <div class="card hero">
+        <p class="eyebrow">UTEC · Deep Learning</p>
+        <h1>Simulador <span class="accent">Interactivo</span></h1>
+        <p class="subtitle">
+          Practica con el banco de <strong id="total-count">…</strong> preguntas.
+          Las fórmulas se renderizan con KaTeX y al final verás
+          accuracy, precision / recall / F1 macro y matriz de confusión.
+        </p>
+
+        <div class="mode-grid">
+          <button class="mode-card" id="btn-practica">
+            <span class="mode-title">Modo Práctica</span>
+            <span class="mode-desc">20 preguntas aleatorias · ideal para repasar</span>
+            <span class="mode-cta">Empezar →</span>
+          </button>
+          <button class="mode-card" id="btn-examen">
+            <span class="mode-title">Modo Examen</span>
+            <span class="mode-desc">Banco completo barajado · simulacro real</span>
+            <span class="mode-cta">Empezar →</span>
+          </button>
+        </div>
+
+        <div class="options-row">
+          <label class="check">
+            <input type="checkbox" id="opt-shuffle-options" checked />
+            <span>Barajar opciones en cada pregunta</span>
+          </label>
+          <label class="num-select">
+            <span>Práctica con</span>
+            <select id="opt-num">
+              <option value="10">10</option>
+              <option value="20" selected>20</option>
+              <option value="30">30</option>
+              <option value="50">50</option>
+            </select>
+            <span>preguntas</span>
+          </label>
+        </div>
+
+        <p class="hint">Sin backend: nada se guarda. Las métricas se calculan en tu navegador al terminar.</p>
+      </div>
+    </section>
+
+    <!-- ============ QUIZ SCREEN ============ -->
+    <section id="screen-quiz" class="screen">
+      <div class="topbar">
+        <div class="progress-wrap">
+          <div class="progress-meta">
+            <span id="progress-label">Pregunta 1/20</span>
+            <span id="score-label">Puntaje: 0</span>
+          </div>
+          <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+        </div>
+        <button class="ghost-btn" id="btn-quit">✕ Salir</button>
+      </div>
+
+      <div class="card question-card">
+        <div id="question-text" class="question-text"></div>
+        <div id="options-list" class="options-list"></div>
+      </div>
+
+      <div class="quiz-footer">
+        <div id="feedback" class="feedback" aria-live="polite"></div>
+        <button id="btn-next" class="primary-btn hidden">Siguiente →</button>
+      </div>
+    </section>
+
+    <!-- ============ RESULTS SCREEN ============ -->
+    <section id="screen-results" class="screen">
+      <div class="card">
+        <p class="eyebrow">Simulacro terminado</p>
+        <h2 id="final-score">0/0</h2>
+        <p class="subtitle" id="final-verdict"></p>
+
+        <div class="metrics-grid" id="metrics-grid"></div>
+
+        <h3>Matriz de confusión <small>(filas = real, columnas = predicha)</small></h3>
+        <div class="table-wrap"><table id="confusion-table" class="matrix"></table></div>
+
+        <h3>Métricas por clase <small>(clase = letra de respuesta)</small></h3>
+        <div class="table-wrap"><table id="perclass-table" class="matrix">
+          <thead><tr><th>Clase</th><th>TP</th><th>FP</th><th>FN</th><th>TN</th><th>Prec.</th><th>Rec.</th><th>F1</th></tr></thead>
+          <tbody></tbody>
+        </table></div>
+
+        <h3>Preguntas falladas (<span id="wrong-count">0</span>)</h3>
+        <div id="wrong-list" class="wrong-list"></div>
+
+        <div class="actions">
+          <button class="primary-btn" id="btn-retry">↻ Reintentar</button>
+          <button class="ghost-btn" id="btn-home">← Inicio</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>DeepLearning-QuizPractica · estático, listo para GitHub Pages · fórmulas con KaTeX</span>
+  </footer>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="app.js"></script>
+</body>
+</html>
