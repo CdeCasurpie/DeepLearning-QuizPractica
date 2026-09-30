@@ -1,0 +1,1746 @@
+[
+  {
+    "id": 1,
+    "question": "En Multi-Head Attention, sea X con shape $[B, n\\_seq, n\\_dim]$, $h$ heads y $d_k = d_v = n\\_dim/h$. Implementas Q, K, V con una sola capa lineal por tensor y luego haces reshape por heads. ¿Qué conjunto de shapes es coherente?",
+    "options": [
+      "$W_Q$: [n\\_dim, h*d\\_k], Q: [B, n\\_seq, h, d\\_k], $W_O$: [h*d\\_v, n\\_dim], out: [B, n\\_seq, n\\_dim].",
+      "$W_Q$: [h*d\\_k, n\\_dim], Q: [B, h, n\\_seq, d\\_k], $W_O$: [n\\_dim, h*d\\_v], out: [B, n\\_dim, n\\_seq].",
+      "$W_Q$: [n\\_dim, n\\_dim], Q: [B, n\\_seq, h, d\\_k], $W_O$: [n\\_dim, n\\_dim], out: [B, h, n\\_seq, d\\_k].",
+      "$W_Q$: [n\\_dim, h*d\\_v], Q: [B, n\\_seq, h, d\\_v], $W_O$: [h*d\\_k, n\\_dim], out: [B, n\\_seq, n\\_dim].",
+      "$W_Q$: [h*d\\_k, n\\_dim], Q: [B, n\\_seq, d\\_k, h], $W_O$: [n\\_dim, h*d\\_v], out: [B, n\\_seq, n\\_dim]."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 2,
+    "question": "Para un head, toma un par 2D del query en posición $p$: $(q_1, q_2)$ y del key en posición $q$: $(k_1, k_2)$. Con RoPE a una frecuencia $\\omega$, la fase es $\\phi = q\\omega$. ¿Cuál expresión corresponde al dot-product entre los vectores rotados?",
+    "options": [
+      "$(q_1 k_1 + q_2 k_2)\\cos(\\omega(p-q)) + (q_1 k_2 - q_2 k_1)\\sin(\\omega(p-q))$",
+      "$(q_1 k_1 - q_2 k_2)\\cos(\\omega(p-q)) + (q_1 k_2 + q_2 k_1)\\sin(\\omega(p-q))$",
+      "$(q_1 k_1 + q_2 k_2)\\sin(\\omega(p-q)) + (q_1 k_2 - q_2 k_1)\\cos(\\omega(p-q))$",
+      "$(q_1 k_1 - q_2 k_2)\\sin(\\omega(p-q)) + (q_1 k_2 + q_2 k_1)\\cos(\\omega(p-q))$",
+      "$(q_1 k_1 + q_2 k_2)\\cos(\\omega(p+q)) + (q_1 k_2 - q_2 k_1)\\sin(\\omega(p+q))$"
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 3,
+    "question": "En scaled dot-product attention, asume que las componentes de $q, k \\in \\mathbb{R}^{d_k}$ son i.i.d., media 0 y varianzas finitas. ¿Por qué $qk$ se escala por $\\sqrt{d_k}$ antes de aplicar Softmax?",
+    "options": [
+      "Forzar pesos a distribución casi uniformes, reduciendo la entropía del attention map.",
+      "Asegurar que $q$ y $k$ queden normalizados sin usar LayerNorm ni RMSNorm dentro del dot-product attention.",
+      "Garantizar que la salida $Z$ tenga norma constante aun cuando cambie $d_v$.",
+      "Mantener Var(logit) aprox. independiente de $d_k$ para evitar saturación de Softmax.",
+      "Compensar que $W_Q$ y $W_K$ duplican la varianza al crecer n\\_seq en training."
+    ],
+    "answer_idx": 3
+  },
+  {
+    "id": 4,
+    "question": "En Swin Transformer, se alterna W-MSA con SW-MSA usando un shift de patches. Considera dos capas consecutivas: primero W-MSA y luego SW-MSA. ¿Qué afirmación describe mejor la conectividad resultante?",
+    "options": [
+      "La segunda capa no cambia vecindades; solo añade regularización por masking.",
+      "El shift cambia la partición; tokens atienden vecinos de ventanas distintas en la siguiente capa.",
+      "El shift hace global attention exacta dentro de dos capas, sin aumentar costo.",
+      "El shift fuerza que todo token atienda al [CLS], generando mezcla global inmediata.",
+      "La conectividad se vuelve global si hacemos $s = M$ (configuración óptima), ya que colapsa la grilla."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 5,
+    "question": "En ViT, una imagen $[B, H, W, C]$ se divide en parches $P \\times P$, se proyecta a dimensión $D$, se concatena un token CLS y se suman learned absolute positional embeddings. ¿Cuál es la forma de $Z_0$?",
+    "options": [
+      "$Z_0 \\in \\mathbb{R}^{B \\times N \\times D}$",
+      "$Z_0 \\in \\mathbb{R}^{B \\times (N+1) \\times (P^2 C)}$",
+      "$Z_0 \\in \\mathbb{R}^{B \\times (N+1) \\times D}$",
+      "$Z_0 \\in \\mathbb{R}^{B \\times N \\times (P^2 C)}$",
+      "$Z_0 \\in \\mathbb{R}^{B \\times D \\times (N+1)}$"
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 6,
+    "question": "En patch merging de Swin Transformer. Para la entrada $[B, H, W, C]$, ¿cuál es la forma de salida?",
+    "options": [
+      "$[B, H/2, W/2, 2C]$",
+      "$[B, H/2, W/2, 4C]$",
+      "$[B, H/2, W/2, C]$",
+      "$[B, H/2, W, 2C]$",
+      "$[B, H, W/2, 2C]$"
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 7,
+    "question": "¿Qué es ICNR initialization? Usado en PixelShuffle.",
+    "options": [
+      "Inicializar cada sub-kernel distinto con Xavier, para diversificar sub-píxeles desde el inicio.",
+      "Reescalar activaciones para compensar la expansión espacial y mantener activación promedio constante.",
+      "Forzar pesos a cero en la mitad de canales, para controlar varianza en el espacio.",
+      "Inicializar un kernel base y replicarlo $r^2$ veces en los grupos de canales que se shufflean.",
+      "Reordenar canales aleatoriamente por batch para romper correlaciones periódicas."
+    ],
+    "answer_idx": 3
+  },
+  {
+    "id": 8,
+    "question": "Arquitectura 2D (conv con padding same): Conv $3\\times3$, stride 1; Conv $3\\times3$, stride 1; Max Pooling $2\\times2$, stride 2; Conv $3\\times3$, stride 1. ¿Cuál es el receptive field (lado, en píxeles) del último feature map respecto al input?",
+    "options": [
+      "8",
+      "9",
+      "10",
+      "11",
+      "12"
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 9,
+    "question": "Cuando el expected risk es muy alto debido a un underfitting severo, ¿qué componente tiende a ser dominante en el error?",
+    "options": [
+      "El error debido a alta varianza.",
+      "El error debido al ruido independiente.",
+      "El error debido a un sesgo alto.",
+      "La falta de regularización $l_2$."
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 10,
+    "question": "Se desea estimar un linear model mediante Maximum a Posteriori (MAP) con regularización $l_1$. ¿Qué distribución a priori típicamente se debe asumir?",
+    "options": [
+      "Una distribución exponencial con parámetro $\\lambda$.",
+      "Una distribución Gaussiana con media cero.",
+      "Una distribución Beta con parámetros $a$ y $b$.",
+      "Una distribución Laplaciana con parámetro $\\lambda$.",
+      "Una distribución uniforme en la esfera unitaria."
+    ],
+    "answer_idx": 3
+  },
+  {
+    "id": 11,
+    "question": "¿Cuál es la motivación principal de Kaiming/He Initialization?",
+    "options": [
+      "Reducir la complejidad computacional durante el backpropagation.",
+      "Impedir la saturación de las neuronas sigmoidales en la salida.",
+      "Garantizar que la salida de la función de activación sea siempre mayor que cero.",
+      "Asegurar la ortogonalidad de las matrices de pesos.",
+      "Mantener la varianza de las salidas de cada capa aproximadamente constante."
+    ],
+    "answer_idx": 4
+  },
+  {
+    "id": 12,
+    "question": "El objetivo principal de depthwise convolution en MobileNet es:",
+    "options": [
+      "Reemplazar pooling con convoluciones más profundas.",
+      "Separar la convolución en una parte espacial y otra de combinación de canales.",
+      "Reducir la dimensionalidad antes de aplicar convoluciones más grandes para reducir el costo computacional.",
+      "Agregar una etapa de channel attention para mejorar la capacidad de la red."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 13,
+    "question": "El cell state en las LSTM es responsable de:",
+    "options": [
+      "Almacenar el último estado de activación para la salida de la LSTM.",
+      "Capturar información de largo plazo.",
+      "Ajustar dinámicamente la dimensionalidad de entrada en cada paso.",
+      "Eliminar el problema de vanishing gradient al saturar las activaciones.",
+      "Almacenar la información más relevante para la tarea actual de la red."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 14,
+    "question": "EfficientNet se basa en un bloque MBConv que incorpora un módulo de Squeeze-and-Excitation (SE). ¿Cuál es su función principal?",
+    "options": [
+      "Reemplazar por completo la convolución depthwise por una operación de gating binaria.",
+      "Realizar una reducción dimensional en el espacio de canales mediante convoluciones $1\\times1$ antes de la operación de convolución depthwise.",
+      "Implementar una normalización estandarizada por batch para cada canal, mejorando la estabilidad durante el entrenamiento.",
+      "Aplicar una atención espacial adaptativa que modula la importancia de diferentes regiones de la entrada.",
+      "Reforzar los canales con información más relevante y atenuar aquellos menos informativos."
+    ],
+    "answer_idx": 4
+  },
+  {
+    "id": 15,
+    "question": "En Multi-Query Attention (MQA), se busca reducir el uso de memoria de K y V durante la inferencia manteniendo la calidad del modelo. ¿Cuál de las siguientes alternativas describe mejor MQA?",
+    "options": [
+      "Compartir un único par de cabezas Key y Value a través de todos los Attention Heads.",
+      "Asignar un par Key-Value independiente para cada head y concatenar salidas.",
+      "Agrupar las Query en buckets para reducir la complejidad cuadrática.",
+      "Compartir las matrices de proyección de Query entre capas consecutivas."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 16,
+    "question": "¿Cuál es la diferencia fundamental entre GRU y LSTM?",
+    "options": [
+      "GRU elimina el cell state como tal y fusiona su función en un único estado interno simplificado.",
+      "GRU conserva tanto la cell state como la hidden state, pero elimina el output gate.",
+      "GRU agrega forget gate adicional para el cell state para controlar directamente la salida.",
+      "GRU utiliza una cell state interna pero la oculta dentro del reset gate para simplificar la arquitectura.",
+      "GRU mantiene la cell state oculta, pero fusiona el input y output gate en una sola compuerta."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 17,
+    "question": "Considera un problema binario $p(y_i=1|x_i,w)=\\sigma(w^\\top x_i)$ y un prior Laplaciano sobre $w$. ¿Qué optimization problem corresponde al estimador MAP?",
+    "options": [
+      "Squared loss con penalización $l_1$.",
+      "Logistic loss con penalización $l_2$.",
+      "Logistic loss con penalización $l_1$.",
+      "Squared loss con penalización $l_2$.",
+      "Hinge loss con penalización $l_2$."
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 18,
+    "question": "Considera dos familias de modelos entrenadas sobre múltiples resamples del mismo problema. La familia A da error alto tanto en training como en test, pero muy estable entre resamples. La familia B logra training error mucho menor, pero el test error fluctúa fuertemente entre resamples. ¿Qué conclusión es correcta?",
+    "options": [
+      "A tiene low bias y high variance; B tiene high bias y low variance.",
+      "A tiene high bias y low variance; B tiene lower bias y higher variance.",
+      "Ambas están dominadas por noise, y la diferencia es solo muestral.",
+      "A tiene low variance por overfitting; B tiene high bias por underfitting.",
+      "A y B tienen el mismo bias; solo cambia el irreducible noise."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 19,
+    "question": "Considere dos instancias $h_{\\theta_1}$ y $h_{\\theta_2}$ de una misma familia de modelos, evaluadas sobre el mismo dataset de entrenamiento. Supón que la relación entre empirical risks es $\\mathcal{R}_{emp}(h_{\\theta_1}) < \\mathcal{R}_{emp}(h_{\\theta_2})$. ¿Qué alternativa es correcta?",
+    "options": [
+      "$h_{\\theta_2}$ tendrá menor expected risk bajo la misma distribución de datos.",
+      "$h_{\\theta_1}$ estará más cerca de la Bayes rule que $h_{\\theta_2}$.",
+      "$h_{\\theta_2}$ exhibe mayor variance fuera de muestra que $h_{\\theta_1}$.",
+      "$h_{\\theta_1}$ solo queda mejor ordenado en términos de empirical risk.",
+      "$h_{\\theta_2}$ presenta mayor approximation error respecto a la función objetivo."
+    ],
+    "answer_idx": 3
+  },
+  {
+    "id": 20,
+    "question": "Sea $p_i(\\tau) = \\frac{\\exp(z_i/\\tau)}{\\sum_j \\exp(z_j/\\tau)}$ y $L(\\tau) = -\\sum_i y_i \\log p_i(\\tau)$ con $y$ one-hot. ¿Cuál es $\\frac{\\partial L}{\\partial z}$?",
+    "options": [
+      "$p(\\tau) - y$",
+      "$\\tau(p(\\tau) - y)$",
+      "$\\frac{1}{\\tau^2}(p(\\tau) - y)$",
+      "$\\frac{1}{\\tau}(y - p(\\tau))$"
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 21,
+    "question": "Sea el residuo $r = \\hat{y} - y$. Considera $L_{MSE} = r^2/2$ y $L_{MAE} = |r|$. ¿Qué alternativa es correcta?",
+    "options": [
+      "MAE produce gradiente $r$, por eso penaliza más los errores grandes.",
+      "MSE produce gradiente $\\text{sign}(r)$, por eso ignora la magnitud del error.",
+      "MAE produce gradiente $\\text{sign}(r)$, de magnitud constante.",
+      "MSE produce gradiente $r^2$, por eso explota en residuos medianos."
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 22,
+    "question": "Comparamos el entrenamiento del mismo modelo con el mismo número total de ejemplos vistos, pero con batch size 8 vs batch size 2048. ¿Qué conclusión es la correcta?",
+    "options": [
+      "Batch pequeño introduce más ruido y tiende a favorecer regiones de menor curvatura / mínimos más flat.",
+      "Batch grande induce más ruido y favorece mínimos más flat por exploración.",
+      "Batch pequeño induce menos ruido y favorece mínimos más sharp por estabilidad.",
+      "Batch grande y pequeño convergen a la misma curvatura si el learning rate es idéntico."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 23,
+    "question": "Sobre la arquitectura de ConvNeXt:",
+    "options": [
+      "DW $7\\times7$ mezcla canales globalmente y el FFN agrega atención espacial explícita.",
+      "DW $7\\times7$ amplía contexto espacial barato y el FFN remezcla canales en alta dimensión.",
+      "DW $7\\times7$ reemplaza Layer Norm y el FFN corrige la pérdida de normalización local.",
+      "DW $7\\times7$ reduce resolución de forma estable y el FFN recupera detalle fino."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 24,
+    "question": "Queremos ampliar el contexto espacial capturado por una CNN para segmentación, ¿Qué podemos hacer sin reducir las dimensiones de salida y sin aumentar el número de parámetros?",
+    "options": [
+      "Sustituir todas las convoluciones por max pooling con ventana grande.",
+      "Aumentar el stride de las capas conv. de 1 a 2.",
+      "Introducir dilated conv. con mayor dilation rate.",
+      "Añadir padding extra alrededor del input en cada capa.",
+      "Reemplazar kernels $3\\times3$ por kernels $7\\times7$."
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 25,
+    "question": "Para LSTM con $c_t = f_t \\odot c_{t-1} + i_t \\odot \\tilde{c}_t$ y $h_t = o_t \\odot \\tanh(c_t)$, ¿cómo podemos maximizar la persistencia de la memoria (cell state)?",
+    "options": [
+      "$f_t \\approx 0$ e $i_t \\approx 1$, de modo que $c_t$ se reescribe y la red evita acumulación.",
+      "$o_t \\approx 1$ e $i_t \\approx 1$, de modo que $h_t$ expone toda la memoria y el gradiente fluye.",
+      "$o_t \\approx 0$ y $f_t \\approx 0$, de modo que la salida se bloquea y la memoria se estabiliza.",
+      "$f_t \\approx 1$, porque eliminar la salida fuerza a preservar gradiente en $c_t$.",
+      "$f_t \\approx 1$ e $i_t \\approx 0$, de modo que $c_t$ copia $c_{t-1}$ casi sin perturbación."
+    ],
+    "answer_idx": 4
+  },
+  {
+    "id": 26,
+    "question": "En una GRU con $h_t = (1-z_t)\\odot h_{t-1} + z_t \\odot \\tilde{h}_t$ y $\\tilde{h}_t = \\tanh(W[r_t \\odot h_{t-1}, x_t] + b)$. Si en un paso se cumple $r_t = 0$ y $z_t = 1$, ¿qué implica exactamente para $h_t$?",
+    "options": [
+      "$h_t$ depende solo de $x_t$ y los pesos, porque se anula el aporte de $h_{t-1}$ en $\\tilde{h}_t$.",
+      "$\\tilde{h}_t$ copia $h_{t-1}$ exactamente, porque $z_t = 1$ preserva el estado previo sin modificación.",
+      "$h_t$ se vuelve exactamente cero, porque fuerza $\\tilde{h}_t = 0$ para cualquier $x_t$.",
+      "$h_t$ es una mezcla de $h_{t-1}$ y $x_t$, porque $z_t$ controla mezcla independientemente de $r_t$.",
+      "$h_t$ depende solo de $h_{t-1}$, porque $r_t = 0$ elimina el efecto de $x_t$ en la dinámica."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 27,
+    "question": "Compare una LSTM estándar y una GRU estándar manteniendo el hidden size. ¿Cuál afirmación es la más correcta?",
+    "options": [
+      "GRU usa cuatro transformaciones afines como LSTM, pero agrega además un cell state explícito para estabilidad.",
+      "LSTM usa cuatro transformaciones afines (gates y candidato) y mantiene un cell state; GRU usa tres y no separa cell state.",
+      "LSTM y GRU tienen el mismo número de matrices y sesgos; la diferencia es el uso eficiente de las compuertas por el lado de la GRU.",
+      "GRU siempre supera a LSTM en dependencias largas porque su reset gate garantiza gradiente constante.",
+      "LSTM siempre entrena más rápido que GRU porque el cell state evita computar gradientes a través de gates."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 28,
+    "question": "¿Cuál error conceptual aparece en esta afirmación: \"Un frecuentista puede asignar probabilidad 0.7 a que mañana llueva, porque en 70\\% de los días similares llovió\"?",
+    "options": [
+      "Ningún error: es una definición válida.",
+      "Error: la definición corresponde al enfoque bayesiano.",
+      "Error: la definición corresponde al enfoque laplaciano.",
+      "Error: el frecuentista no asigna probabilidad a un evento único.",
+      "Error: el frecuentista requiere equiprobabilidad, no frecuencias."
+    ],
+    "answer_idx": 3
+  },
+  {
+    "id": 29,
+    "question": "En una CNN reemplazas un bloque por una convolución con stride 2 (sin pooling) para reducir resolución. El input tiene alta energía en altas frecuencias espaciales (texturas finas). ¿Cómo afrontarías el aliasing sin alterar el factor total de downsampling?",
+    "options": [
+      "Aumentar $C_{out}$ para que la red modele mejor las altas frecuencias antes del stride.",
+      "Reemplazar ReLU por GELU para suavizar la no-linearidad y evitar componentes altas.",
+      "Usar kernel más grande en la strided convolution, manteniendo stride 2, sin prefiltrado.",
+      "Aplicar un low-pass filter antes del subsampling implícito del stride 2.",
+      "Cambiar a max pooling $2\\times2$ y mantener todo lo demás igual, porque no interpola."
+    ],
+    "answer_idx": 3
+  },
+  {
+    "id": 30,
+    "question": "Quieres igualar el receptive field de una $7\\times7$ convolution (stride 1) usando un stack de tres $3\\times3$ convolutions (stride 1) con activación entre capas. Considera $C_{in}=C_{out}=C$, sin bias. ¿Qué afirmación es correcta?",
+    "options": [
+      "El stack tiene $27C^2$ parámetros y añade no-linearidad extra frente a $49C^2$ del $7\\times7$.",
+      "El stack tiene $49C^2$ parámetros y solo mejora por regularización implícita del depth.",
+      "El stack tiene $18C^2$ parámetros porque cada $3\\times3$ equivale a un kernel 2D separable.",
+      "El stack tiene 270 parámetros porque cada filtro $3\\times3$ se comparte entre canales.",
+      "El stack tiene más parámetros que $7\\times7$, pero compensa por menor FLOPs en inferencia."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 31,
+    "question": "¿Por qué Fused-MBConv acelera las primeras etapas respecto a MBConv estándar?",
+    "options": [
+      "Porque combina expansión y convolución espacial en una sola operación.",
+      "Porque elimina proyección lineal y así aumenta la tasa de transferencia efectiva de la GPU.",
+      "Porque reemplaza depthwise por dilated conv con mejor vectorization.",
+      "Porque suprime activaciones y normalizaciones internas, evitando kernel launches.",
+      "Porque usa solo grouped conv, maximizando el paralelismo por warp."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 32,
+    "question": "¿Cuál es la diferencia entre añadir L2 a la loss en Adam y usar AdamW?",
+    "options": [
+      "No hay diferencia real; son equivalentes con cualquier optimizador adaptativo.",
+      "En Adam, L2 se reescala por los momentos; en AdamW el decay es desacoplado.",
+      "Adam ignora el término L2; se requiere AdamW para aplicar regularización.",
+      "AdamW aplica decay solo a biases; Adam lo aplica solo a weights.",
+      "AdamW equivale a ajustar $\\beta_1$ y $\\beta_2$; L2 permanece acoplado."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 33,
+    "question": "Para Cross-Attention en un Transformer encoder-decoder:",
+    "options": [
+      "Q desde el encoder; K, V desde el decoder, con Softmax sobre $QK^\\top$.",
+      "Q desde el decoder; K, V desde el encoder, con Softmax sobre $QK^\\top$.",
+      "Q, V desde el decoder; K desde el encoder, con Softmax sobre $QV^\\top$.",
+      "Q desde el encoder; K desde el encoder; V desde el decoder.",
+      "Q desde el decoder; K desde el decoder; V desde el encoder."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 34,
+    "question": "¿Qué es la Feed-Forward Network (FFN) en Transformers?",
+    "options": [
+      "Es una MLP compartida por token que mezcla canales/representaciones para mejorar la capacidad del modelo.",
+      "Implementa la atención entre canales para mejorar Q, K, V por head.",
+      "Es una MLP que busca relaciones entre los tokens, combinando los tokens con mayor relación.",
+      "Es una MLP que no mezcla información entre tokens.",
+      "Es una MLP que filtra la información irrelevante en las representaciones aprendidas en MHSA."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 35,
+    "question": "¿Qué patrón de activación de gates mantiene el cell state casi idéntico a lo largo del tiempo en una LSTM?",
+    "options": [
+      "$f_t \\approx 1$, $i_t \\approx 1$, $o_t \\approx 0$",
+      "$f_t \\approx 1$, $i_t \\approx 0$, $o_t \\approx 0$",
+      "$f_t \\approx 0$, $i_t \\approx 0$, $o_t \\approx 1$",
+      "$f_t \\approx 1$, $i_t \\approx 1$, $o_t \\approx 1$",
+      "$f_t \\approx 1$, $i_t \\approx 0$, $o_t \\approx 1$"
+    ],
+    "answer_idx": 4
+  },
+  {
+    "id": 36,
+    "question": "¿En qué escenario las LSTMs podrían reintroducir vanishing gradients?",
+    "options": [
+      "Gates saturados cerca de 0 o 1 por largo tiempo, especialmente si las compuertas de olvido se cierran ($f_t \\to 0$).",
+      "Softmax con temperatura alta en la capa de salida.",
+      "BatchNorm aplicada solo en proyecciones de salida.",
+      "Clip norm de gradiente a un valor razonable.",
+      "Inicialización ortogonal de matrices recurrentes."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 37,
+    "question": "Vas a reducir entre 4 la resolución espacial de un feature map. Para minimizar aliasing sin perder más detalle del necesario, podrías:",
+    "options": [
+      "Aplicar un low-pass lineal con cutoff menor o igual a la frecuencia de Nyquist y luego muestrear.",
+      "Muestrear primero y después un low-pass con cutoff a la frecuencia de Nyquist original.",
+      "Usar Max Pooling x2 dos veces, sin filtros, porque pooling ya evita aliasing.",
+      "Aplicar un high-pass para limpiar bordes antes del muestreo.",
+      "Aplicar un band-pass centrado en bajas frecuencias, porque el $1/f$ de imágenes lo permite."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 38,
+    "question": "¿Qué es cardinality en ResNeXt?",
+    "options": [
+      "Cardinality es la profundidad efectiva y se implementa con dilated convolution.",
+      "Cardinality es el número de heads; se logra con grouped convolution.",
+      "Cardinality es el número de ramas paralelas; se logra con grouped convolution.",
+      "Cardinality es el ancho por rama y se implementa con dilated convolution.",
+      "Cardinality es el número de residual units; se logra con grouped convolution."
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 39,
+    "question": "Sea $X \\in \\mathbb{R}^{m \\times n}$ con $\\text{rank}(X) = n$, $m \\ge n$. Además $\\hat{w} = \\arg\\min_w \\frac{1}{2}\\|Xw - y\\|_2^2$. ¿Qué alternativa es correcta?",
+    "options": [
+      "$\\hat{w}$ satisface $X(X^\\top X)^{-1} X^\\top y = y$ y el residual es siempre cero para cualquier $y$.",
+      "$\\hat{w}$ satisface $X^\\top (y - X\\hat{w}) = 0$ y el residual $y - X\\hat{w}$ pertenece a $\\text{col}(X)^\\perp$.",
+      "$\\hat{w}$ satisface $X^\\top (y - X\\hat{w}) = 0$ y la solución es única por invertibilidad de $X^\\top X$.",
+      "$\\hat{w}$ satisface $X(y - X\\hat{w}) = 0$ y la solución es única si $XX^\\top$ es invertible.",
+      "$\\hat{w}$ satisface $(XX^\\top)\\hat{w} = Xy$ y la unicidad depende de $\\text{rank}(XX^\\top) = n$."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 40,
+    "question": "Sea $p(y|w) = \\mathcal{N}(Xw, \\sigma^2 I_m)$ y prior $p(w) = \\mathcal{N}(0, \\tau^2 I_n)$. ¿Qué problema equivale al MAP?",
+    "options": [
+      "$\\min_w \\|Xw - y\\|_2^2 + \\frac{\\pi}{\\sigma^2}\\|w\\|_2^2$",
+      "$\\min_w \\frac{1}{\\sigma^2}\\|Xw - y\\|_2^2 + \\frac{1}{\\tau^2}\\|w\\|_2^2$",
+      "$\\min_w \\frac{1}{\\sigma^2}\\|Xw - y\\|_1 + \\frac{1}{\\tau^2}\\|w\\|_1$",
+      "$\\min_w \\frac{1}{\\tau^2}\\|Xw - y\\|_2^2 + \\frac{1}{\\sigma^2}\\|w\\|_1$",
+      "$\\min_w \\|Xw - y\\|_2^2 + \\frac{\\pi}{\\pi}\\|w\\|_1$"
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 41,
+    "question": "Sea $p_i^* = \\frac{\\exp(\\beta E_i)}{\\sum_j \\exp(\\beta E_j)}$ y $\\tau = \\beta^{-1}$. Manteniendo fijos los $E_i$, ¿qué alternativa es correcta?",
+    "options": [
+      "Al aumentar $\\tau$, $p^*$ se vuelve más uniforme y la entropía aumenta.",
+      "Al aumentar $\\tau$, $p^*$ concentra más masa en el mayor $E_i$.",
+      "Al disminuir $\\tau$, $p^*$ se vuelve más uniforme y la entropía aumenta.",
+      "Al disminuir $\\tau$, $p^*$ se hace uniforme si $\\sum_i E_i = 0$.",
+      "Cambiar $\\tau$ solo altera $p^*$ si $K=2$ no si $K>2$."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 42,
+    "question": "Sea Adam con $m_0 = 0$, $v_0 = 0$, $m_t = \\beta_1 m_{t-1} + (1-\\beta_1)g$, $v_t = \\beta_2 v_{t-1} + (1-\\beta_2)g^2$, con gradiente constante $g \\neq 0$. ¿Qué par $(m_t, \\hat{m}_t)$ es correcto, donde $\\hat{m}_t$ es la corrección de sesgo?",
+    "options": [
+      "$m_t = \\beta_1^t g$, $\\hat{m}_t = g / (1-\\beta_1^t)$",
+      "$m_t = (1-\\beta_1)g$, $\\hat{m}_t = (1-\\beta_1^t)g$",
+      "$m_t = (1-\\beta_1^t)g$",
+      "$m_t = (1-\\beta_1^t)g$, $\\hat{m}_t = (1-\\beta_1^t)g$",
+      "$m_t = (1-\\beta_1^t)g$, $\\hat{m}_t = g$"
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 43,
+    "question": "Sea un modelo con salida $\\hat{y} = \\sigma(z)$ y función loss binary cross-entropy $L(y, \\hat{y}) = -(y \\log \\hat{y} + (1-y)\\log(1-\\hat{y}))$. ¿A qué es igual $\\frac{\\partial L}{\\partial z}$?",
+    "options": [
+      "$(\\hat{y}-y)\\hat{y}(1-\\hat{y})$",
+      "$(y-\\hat{y})\\hat{y}(1-\\hat{y})$",
+      "$\\log \\frac{y}{1-y} - y$",
+      "$\\hat{y} - y$",
+      "$y - \\hat{y}$"
+    ],
+    "answer_idx": 3
+  },
+  {
+    "id": 44,
+    "question": "Considere $y = X\\beta + \\epsilon$ con $\\mathbb{E}[\\epsilon]=0$, $\\text{Var}(\\epsilon) = \\sigma^2 I$. Para Ridge, $\\hat{w}_\\lambda = (X^\\top X + \\lambda I)^{-1} X^\\top y$. ¿Qué efecto tiene aumentar $\\lambda > 0$?",
+    "options": [
+      "bias sube, variance sube, noise no cambia; la regularización reduce el error irreducible.",
+      "bias baja, variance baja, noise sube; la regularización siempre mejora ambos términos.",
+      "bias sube, variance sube, noise no cambia; la regularización empeora la estabilidad pero elimina outliers.",
+      "bias sube, variance baja, noise no cambia; la regularización sesga el estimador y estabiliza su sensibilidad.",
+      "bias sube, variance baja, noise baja; la regularización transfiere error hacia el ruido observado."
+    ],
+    "answer_idx": 3
+  },
+  {
+    "id": 45,
+    "question": "Sea el residuo $r = \\hat{y} - y$. Considera $L_{MSE} = \\frac{1}{2}r^2$ y $L_{MAE} = |r|$. ¿Qué afirmación sobre $\\frac{\\partial L}{\\partial \\hat{y}}$ es correcta?",
+    "options": [
+      "MAE produce gradiente $r$, por eso penaliza más los errores grandes.",
+      "MSE produce gradiente $\\text{sign}(r)$, por eso ignora la magnitud del error.",
+      "MAE produce gradiente $\\text{sign}(r)$, de magnitud constante.",
+      "MSE produce gradiente $r^2$, por eso explota para residuos medianos.",
+      "MAE produce gradiente $\\frac{1}{1+r^2}$, por eso se satura en outliers."
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 46,
+    "question": "Definimos $\\hat{y} = \\text{softmax}(z/\\tau)$ con $\\tau > 0$. ¿Cuál es el gradiente correcto de $L$ respecto a $z$?",
+    "options": [
+      "$\\nabla_z L = \\hat{y} - y$",
+      "$\\nabla_z L = \\frac{\\hat{y} - y}{z}$",
+      "$\\nabla_z L = \\tau(\\hat{y} - y)$",
+      "$\\nabla_z L = \\frac{1}{\\tau}(\\hat{y} - y)$",
+      "$\\nabla_z L = \\frac{\\hat{y}}{\\tau}$"
+    ],
+    "answer_idx": 3
+  },
+  {
+    "id": 47,
+    "question": "Considera $J(w) = \\frac{1}{2}\\|Xw - y\\|_2^2$. Para gradient descent con paso constante $\\alpha$, ¿qué condición garantiza descenso monótono de la loss para cualquier inicio $w_0$?",
+    "options": [
+      "$\\alpha \\in (0, 1/\\lambda_{\\min}(X^\\top X))$",
+      "$\\alpha \\in (0, 2/\\lambda_{\\min}(X^\\top X))$",
+      "$\\alpha \\in (0, 2/\\lambda_{\\max}(X^\\top X))$",
+      "$\\alpha \\in (0, 1/\\|X\\|_F^2)$",
+      "$\\alpha \\in (0, 2/\\|X\\|_2)$"
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 48,
+    "question": "En el análisis bias-variance, el término de noise corresponde a:",
+    "options": [
+      "Error debido al tamaño finito del dataset.",
+      "Varianza intrínseca del ruido en los datos, irreducible por el modelo.",
+      "Error que puede eliminarse aplicando regularización $L_2$.",
+      "Diferencia sistemática entre la función real y la hipótesis promedio.",
+      "Error que se reduce con normalización de features."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 49,
+    "question": "Tienes una tarea de detección de fraude con prevalencia menor al 1\\% y el equipo de producto exige reducir falsos positivos en el conjunto revisado por analistas. ¿Qué métrica compararías entre modelos para esta decisión y por qué?",
+    "options": [
+      "AUPRC, porque precision explicita la proporción de FP dentro de los recuperados y varía con la prevalencia.",
+      "AUROC, porque su invarianza a la prevalencia permite medir FP absolutos de forma directa.",
+      "Accuracy, porque con muchos negativos es más difícil inflarla accidentalmente.",
+      "F1 a umbral 0.5, porque estandariza la comparación y evita sesgos.",
+      "Recall, porque al penalizar probabilidades mal calibradas reduce FP."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 50,
+    "question": "Para una conv $3\\times3$ con dilation $=2$ sobre un feature map, ¿qué afirmación es más correcta respecto a parámetros y RF?",
+    "options": [
+      "Mismos parámetros que $3\\times3$; RF equivalente a $5\\times5$; costo cercano a $3\\times3$.",
+      "Menos parámetros que $3\\times3$; RF igual a $3\\times3$; costo menor que $3\\times3$.",
+      "Más parámetros que $3\\times3$; RF equivalente a $7\\times7$; costo idéntico.",
+      "Mismos parámetros que $3\\times3$; RF igual a $3\\times3$; costo idéntico."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 51,
+    "question": "¿Por qué una residual connection mitiga el vanishing gradient de forma más directa?",
+    "options": [
+      "Porque incrementa la varianza de activaciones igualando la de entradas.",
+      "Porque fuerza a todas las neuronas a estar en la región lineal de ReLU.",
+      "Porque suprime los pesos de salida en capas profundas por regularización $L_2$.",
+      "Porque añade un término con derivada unitaria que evita la atenuación acumulada.",
+      "Porque elimina la necesidad de batch normalization en capas internas."
+    ],
+    "answer_idx": 3
+  },
+  {
+    "id": 52,
+    "question": "Sea $X\\in\\mathbb{R}^{m\\times n}$. ¿Qué condición garantiza que OLS tenga una única solución en w?",
+    "options": [
+      "X tiene full row rank, de modo que $XX^\\top$ resulta invertible.",
+      "X tiene full column rank, de modo que $X^\\top X$ resulta invertible.",
+      "X tiene columnas repetidas, de modo que $X^\\top X$ queda estable.",
+      "X tiene filas repetidas, de modo que $XX^\\top$ queda estable.",
+      "y pertenece a $col(X)$, de modo que el residual es cero."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 53,
+    "question": "¿Qué relación hay entre manifold hypothesis y Hughes Phenomenon?",
+    "options": [
+      "Si aumenta la dimensión ambiente, el expected risk siempre disminuye.",
+      "Si aumenta la dimensión ambiente, el empirical risk siempre aumenta.",
+      "Si la dimensión intrínseca es baja, reducir dimensión puede ayudar.",
+      "Si la dimensión intrínseca es baja, añadir features siempre ayuda.",
+      "Si hay pocas muestras, regularization deja de afectar el test error."
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 54,
+    "question": "En clasificación binaria, sea a el logit, $p=\\sigma(a)$ y $y\\in\\{0,1\\}$. Si una predicción está saturada y equivocada, ¿por qué binary cross-entropy suele entrenar mejor que MSE?",
+    "options": [
+      "MSE elimina el factor sigmoid, pero BCE lo conserva dentro del gradient.",
+      "Ambas losses tienen gradients idénticos cuando la sigmoid está saturada mal.",
+      "Cross-entropy vuelve convexa la red, eliminando plateaus generados por hidden layers.",
+      "BCE deja gradient $p-y$ sobre logits, evitando un factor sigmoid saturante.",
+      "El MSE no usa probabilidades, por eso sus gradients no calibran outputs."
+    ],
+    "answer_idx": 3
+  },
+  {
+    "id": 55,
+    "question": "¿Cuál es el papel de Fused-MBConv?",
+    "options": [
+      "Sustituye la expansión por una depthwise más ancha, manteniendo intacta la proyección pointwise de salida.",
+      "Elimina la proyección final y conserva solo una convolution espacial, reduciendo el riesgo de overfitting temprano.",
+      "Introduce grouped convolution en lugar de depthwise, para aproximarse al comportamiento de vision Transformer.",
+      "Reemplaza el skip residual por concatenation local, lo que reduce latencia cuando la resolución es todavía alta.",
+      "Fusiona expansión y spatial convolution en una sola operación densa, lo que puede mejorar velocidad en etapas iniciales."
+    ],
+    "answer_idx": 4
+  },
+  {
+    "id": 56,
+    "question": "Sea P la distribución verdadera y $Q_\\theta$ el modelo. Al minimizar cross-entropy empírica, ¿qué se garantiza?",
+    "options": [
+      "Minimiza $D_{KL}(P||Q_\\theta)$.",
+      "Minimiza $D_{KL}(Q_\\theta||P)$.",
+      "Minimiza Jensen-Shannon.",
+      "Minimiza I(P,Q).",
+      "Minimiza likelihood marginal."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 57,
+    "question": "Una cámara digital registra una fachada con textura periódica muy fina (patrón de muaré). ¿Qué explicación tiene este fenómeno?",
+    "options": [
+      "La quantization redujo amplitudes y generó una oscilación espacial artificial.",
+      "El padding implícito del sensor distorsionó los bordes y creó periodicidad falsa.",
+      "El filtro espacial del lente amplificó todas las bajas frecuencias uniformemente.",
+      "La convolución del sensor con ruido blanco volvió periódica una señal aperiódica.",
+      "El sampling fue insuficiente y plegó altas frecuencias sobre bajas frecuencias."
+    ],
+    "answer_idx": 4
+  },
+  {
+    "id": 58,
+    "question": "¿Por qué se prefiere CNN sobre MLP?",
+    "options": [
+      "Evita por completo overfitting porque sus filtros no dependen del tamaño del input.",
+      "Garantiza invariancia exacta a traslaciones grandes sin necesidad de entrenamiento.",
+      "Elimina la necesidad de activaciones no lineales al usar kernels compartidos.",
+      "Impone locality y weight sharing, reduciendo parámetros y explotando estructura espacial.",
+      "Sustituye toda representación jerárquica por una sola proyección semántica global."
+    ],
+    "answer_idx": 3
+  },
+  {
+    "id": 59,
+    "question": "Para una red sin conexión residual. ¿Qué efecto sobre el gradiente sería emplear Sigmoid, tanh o ReLU?",
+    "options": [
+      "Sigmoid evita vanishing por estar acotada; tanh y ReLU fallan solo cuando los pesos iniciales son grandes.",
+      "tanh elimina vanishing por ser centrada en cero; Sigmoid y ReLU solo cambian la velocidad de convergencia.",
+      "Sigmoid y tanh atenúan gradientes por derivadas pequeñas; ReLU evita eso en positivo, pero puede generar dead units.",
+      "ReLU evita tanto vanishing como dead units, salvo cuando aparece saturación por activaciones demasiado grandes.",
+      "Sigmoid y tanh fallan solo en clasificación; ReLU falla solo en regresión por no ser diferenciable en cero."
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 60,
+    "question": "¿Qué característica de LSTM ayuda a mitigar el vanishing gradient problem?",
+    "options": [
+      "Introduce una ruta aditiva en el cell state, modulada por gates estables.",
+      "Duplica el hidden state en dos sentidos y promedia pasado con futuro.",
+      "Reemplaza tanh por ReLU en toda la celda y elimina saturaciones internas.",
+      "Desacopla memoria y salida, dejando solo al decoder aprender dependencias largas.",
+      "Usa atención fija sobre todos los estados previos y evita la recursión explícita."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 61,
+    "question": "Compare Linformer y Performer.",
+    "options": [
+      "Linformer usa random features positivas; Performer aprende proyecciones sobre la longitud de K, V.",
+      "Linformer usa ventanas locales dilatadas; Performer usa summary tokens para conectar bloques distantes.",
+      "Linformer comprime K, V en longitud; Performer aproxima el kernel softmax con features positivas.",
+      "Linformer comparte K, V entre heads; Performer reconstruye keys y values desde un latent cacheado.",
+      "Linformer elimina la normalización del softmax; Performer conserva attention exacta con menor memoria."
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 62,
+    "question": "¿Qué patrón de activación de gates mantiene el cell state casi idéntico a lo largo del tiempo?",
+    "options": [
+      "$f_t \\approx 1, i_t \\approx 0, o_t \\approx 1$",
+      "$f_t \\approx 0, i_t \\approx 1, o_t \\approx 1$",
+      "$o_t \\approx 0$",
+      "$f_t \\approx 0, i_t \\approx 0$",
+      "$f_t \\approx 1, o_t \\approx 0$"
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 63,
+    "question": "¿Cuál es la función del Feed Forward Network?",
+    "options": [
+      "Mezcla tokens distantes mediante pesos compartidos, mientras attention solo cambia canales locales.",
+      "Introduce causalidad en encoder, porque procesa tokens siguiendo el orden secuencial.",
+      "Normaliza mapas de attention, porque la expansión interna estabiliza el softmax.",
+      "Recalcula attention weights por posición, usando una MLP como sustituto del softmax.",
+      "Enriquece features por token, pero no mezcla información entre tokens secuencialmente."
+    ],
+    "answer_idx": 4
+  },
+  {
+    "id": 64,
+    "question": "Un Transformer mantiene $n_{dim}=512$. Primero usa $h=8$, con $d_k=d_v=64$. Luego cambia a $h=16$, manteniendo $d_k=d_v=n_{dim}/h$. Ignorando bias, ¿qué ocurre?",
+    "options": [
+      "Crecen parámetros principales de proyección, porque cada head añade matrices completas independientes nuevas.",
+      "Baja la memoria de attention maps, porque cada head procesa menos canales internos.",
+      "Disminuyen mapas por capa, sube ancho por head y $W^O$ queda innecesaria.",
+      "Aumentan mapas por capa, baja ancho por head y parámetros principales se mantienen.",
+      "Se mantiene ancho por head, crecen logits por token y baja costo computacional."
+    ],
+    "answer_idx": 3
+  },
+  {
+    "id": 65,
+    "question": "¿Por qué ROPE funciona como relative positional encoding implícito?",
+    "options": [
+      "La rotación introduce fases absolutas, pero el producto escalar preserva solo la norma conjunta de Q y K.",
+      "La rotación usa fases absolutas en Q y K pero el score final queda gobernado por $p-q$.",
+      "La rotación agrega un sesgo entrenable por distancia, aunque no modifica directamente las matrices Q y K.",
+      "La rotación reemplaza el softmax por una comparación angular, eliminando la dependencia de posiciones absolutas.",
+      "La rotación comparte una frecuencia por head, haciendo que todos los pares de tokens tengan igual fase relativa."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 66,
+    "question": "Un Transformer ya entrenado resuelve bien qué tokens son relevantes, pero sus representaciones contextualizadas tienen información semántica poco útil desde esos mismos tokens. Si solo se permite modificar una proyección lineal del bloque de self-attention. ¿Qué cambio sería el más adecuado?",
+    "options": [
+      "Modificar $W^Q$.",
+      "Modificar $W^K$.",
+      "Modificar $W^V$.",
+      "Modificar $W^O$.",
+      "Modificar la proyección lineal en la normalización."
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 67,
+    "question": "¿Qué es RMSNorm (o su análogo usado como base en varias arquitecturas como DyT)?",
+    "options": [
+      "Aplica una tanh escalada elemento a elemento con parámetros aprendibles, sin calcular media ni varianza.",
+      "Divide por el RMS de cada vector y conserva solo un parámetro de escala, sin desplazamiento aprendido.",
+      "Normaliza usando estadísticas del minibatch y usa running mean durante inferencia para estabilizar capas profundas.",
+      "Centra cada token restando la media de features y luego aplica una transformación afín como LayerNorm.",
+      "Usa softmax sobre features para limitar valores extremos y preservar una suma unitaria en cada representación."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 68,
+    "question": "Sobre el Triplet Loss $\\mathcal{L}=\\max(0, \\|f(x_a)-f(x_p)\\|_2^2 - \\|f(x_a)-f(x_n)\\|_2^2 + \\alpha)$. ¿Qué afirmación es correcta?",
+    "options": [
+      "Si $\\|a-p\\|^2 + \\alpha \\le \\|a-n\\|^2$, ese triplet aporta loss cero y gradiente cero.",
+      "Minimizar el loss fuerza $\\|a-p\\|=0$ en todo caso y produce colapso aun con simples negativos bien elegidos.",
+      "El loss define una probabilidad sobre identidades y es equivalente a una cross-entropy estándar.",
+      "Si $\\|a-p\\|^2 + \\alpha \\le \\|a-n\\|^2$ el gradiente empuja p lejos de a para aumentar separación.",
+      "El margen a solo reescala el loss, pero no afecta cuándo un triplet queda inactivo."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 69,
+    "question": "¿Cuál es el rol del centering en iBOT (o arquitecturas como DINO)?",
+    "options": [
+      "Se suma un vector c (EMA del mean de logits del student) para amplificar clases dominantes y estabilizar la entropía del teacher.",
+      "Se aprende c por backprop para minimizar directamente el loss del teacher, acelerando convergencia del tokenizer.",
+      "Se calcula c como promedio del student por batch, para alinear ambos sin momentum ni stop-gradient.",
+      "Se aplica centering al loss del student, porque el teacher no debe ser modificado por estadísticos.",
+      "Se resta un vector c (EMA del mean de logits del teacher) para recentrar logits y reducir colapso por sesgo del softmax."
+    ],
+    "answer_idx": 4
+  },
+  {
+    "id": 70,
+    "question": "En DeiT se combinan dos heads en inferencia. ¿Qué fusión es más adecuada si sus logits pueden estar en escalas distintas?",
+    "options": [
+      "Promediar logits: $p=0.5(p\\_cls+p\\_dist)$ luego softmax final.",
+      "Usar solo p\\_dist, porque el head con teacher es siempre un estimator de menor varianza.",
+      "Multiplicar probabilidades y renormalizar, para penalizar desacuerdos de heads.",
+      "Promediar probabilidades: $p=0.5(p\\_cls+p\\_dist)$ luego arg max.",
+      "Usar solo p\\_cls, porque mezclar con teacher rompe consistencia con labels reales."
+    ],
+    "answer_idx": 3
+  },
+  {
+    "id": 71,
+    "question": "Si en DINO eliminamos centering, pero mantenemos un sharpening fuerte ($\\tau_t$ muy bajo), ¿Qué resultado es más probable?",
+    "options": [
+      "No hay colapso si hay EMA, porque centering y sharpening son redundantes en este caso.",
+      "Colapso a pocos prototypes dominantes, porque el teacher peaky refuerza sesgos sin recentrado batch-wise.",
+      "Salida uniforme, porque $\\tau_t$ bajo hace que softmax tienda a distribución plana.",
+      "Colapso a una representación constante, porque sharpening anula diferencias entre vistas de una imagen.",
+      "Explosión de entropía del teacher, porque sin centering el teacher maximiza incertidumbre por defecto."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 72,
+    "question": "Sea $p^*(x)$ la distribución verdadera de los datos i.i.d. y $p_\\theta(x)$ una familia paramétrica. Bajo MLE, ¿que alternativa es correcta?",
+    "options": [
+      "Maximiza $\\mathbb{E}_{p_\\theta}[\\log p^*(x)]$ y equivale a minimizar $D_{KL}(p_\\theta||p^*)$ más una constante.",
+      "Maximiza $\\mathbb{E}_{p^*}[\\log p_\\theta(x)]$ y equivale a minimizar $D_{JS}(p^*||p_\\theta)$ más una constante.",
+      "Maximiza $\\mathbb{E}_{p^*}[\\log p_\\theta(x)]$ y equivale a minimizar $D_{KL}(p^*||p_\\theta)$ más una constante.",
+      "Minimiza $\\mathbb{E}_{p^*}[-\\log p_\\theta(x)]$ y equivale a maximizar $H(p^*)$ respecto a $\\theta$.",
+      "Minimiza $\\mathbb{E}_{p^*}[-\\log p_\\theta(x)]$ y equivale a minimizar $D_{KL}(p^*||p_\\theta)$ más una constante."
+    ],
+    "answer_idx": 4
+  },
+  {
+    "id": 73,
+    "question": "En un VAE con decoder Gaussiano diagonal heterocedástico, el modelo predice $\\mu_\\theta(z)$ y $\\sigma_\\theta^2(z)$ por dimensión. ¿Cuál afirmación es correcta?",
+    "options": [
+      "Obliga a modelar correlaciones entre dimensiones, porque la diagonal induce covarianza no nula en el espacio latente.",
+      "Se vuelve un MSE puro porque la diagonalidad elimina el término $\\log \\sigma$ de la NLL.",
+      "Se vuelve equivalente a BCE porque una Gaussiana diagonal factoriza como Bernoulli por coordenada.",
+      "Incluye $\\log \\sigma^2$ y residuo ponderado; el modelo puede inflar $\\sigma^2$ donde falla para bajar penalización.",
+      "El óptimo es $\\sigma_\\theta^2(z)=0$ para maximizar likelihood, evitando reconstrucciones borrosas."
+    ],
+    "answer_idx": 3
+  },
+  {
+    "id": 74,
+    "question": "Sea $X \\in \\mathbb{R}^{n\\times d}$ una matriz de características con mayor singular value $\\sigma_{max}$. Consideramos la función de costo $J(w)=\\|Xw-y\\|_2^2$ cuyo gradiente $\\nabla J$ es $L$-Lipschitz con $L=2\\sigma_{max}^2$. ¿Qué rango del learning rate $\\alpha$ garantiza convergencia al óptimo global al aplicar Gradient Descent?",
+    "options": [
+      "$0 < \\alpha < 2\\sigma_{max}^2$",
+      "$0 < \\alpha < \\sigma_{max}^2$",
+      "$0 < \\alpha < 1/\\sigma_{max}^2$",
+      "$0 < \\alpha < 2/\\sigma_{max}$",
+      "$1/\\sigma_{max}^2 < \\alpha < 2/\\sigma_{max}^2$"
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 75,
+    "question": "¿Cuál es la función de los object queries en DETR (Detection Transformer)?",
+    "options": [
+      "Generar los mapas de características piramidales necesarios para la detección multi-dimensional.",
+      "Definir los anclajes (anchors) dinámicos basados en la distribución de píxeles de entrada.",
+      "Reemplazar por completo el concepto de Non-Maximum Suppression.",
+      "Servir como un conjunto fijo de embeddings que es procesado con la salida del encoder para predecir las bounding boxes y las clases.",
+      "Transformar las coordenadas de las bounding boxes a un espacio latente, reduciendo la dimensionalidad para el post-procesamiento."
+    ],
+    "answer_idx": 3
+  },
+  {
+    "id": 76,
+    "question": "Considere la siguiente secuencia de capas en una CNN: Layer 1: Conv2D(kernel=$3\\times3$, stride=1, padding=1, dilation=1); Layer 2: Conv2D(kernel=$3\\times3$, stride=1, padding=2, dilation=2); Layer 3: MaxPool2D(pool_size=$2\\times2$, stride=2); Layer 4: Conv2D(kernel=$5\\times5$, stride=1, padding=2, dilation=1). ¿Cuál es el effective receptive field? (en píxeles)",
+    "options": [
+      "14",
+      "16",
+      "18",
+      "20",
+      "22"
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 77,
+    "question": "En un GRU se tiene $h_t=(1-z_t)\\odot h_{t-1}+z_t\\odot\\tilde{h}_t$, $\\tilde{h}_t=\\tanh(Wx_t+U(r_t\\odot h_{t-1}))$. Para que la red retenga solo la información a largo plazo, ¿qué configuración de gates es la más adecuada?",
+    "options": [
+      "$z_t \\approx 1$",
+      "$r_t \\approx 1$",
+      "$z_t \\approx 0$",
+      "$r_t \\approx 0$",
+      "$z_t \\approx 0$ y $r_t \\approx 1$"
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 78,
+    "question": "Sea InfoNCE loss con $K$ negativos, $\\mathcal{L}_{InfoNCE}=-\\mathbb{E}\\left[\\log\\frac{\\exp(\\mathrm{sim}(q,k^+)/\\tau)}{\\exp(\\mathrm{sim}(q,k^+)/\\tau)+\\sum_{i=1}^{K}\\exp(\\mathrm{sim}(q,k_i^-)/\\tau)}\\right]$. ¿Qué relación es correcta?",
+    "options": [
+      "$I(X;Y) \\leq \\log K + \\mathcal{L}_{InfoNCE}$",
+      "$I(X;Y) \\geq \\log K - \\mathcal{L}_{InfoNCE}$",
+      "$I(X;Y) \\leq \\log K - \\mathcal{L}_{InfoNCE}$",
+      "$I(X;Y) \\geq \\log K + \\mathcal{L}_{InfoNCE}$",
+      "$I(X;Y) \\geq -\\mathcal{L}_{InfoNCE}$"
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 79,
+    "question": "Generalized IoU (GIoU) introduce un término adicional basado en la minimum bounding box. ¿Cuál es su ventaja frente a IoU Loss?",
+    "options": [
+      "GIoU Loss es idéntico a IoU Loss para cualquier par de cajas.",
+      "GIoU Loss añade un término basado en el área de intersección para estabilizar el entrenamiento.",
+      "GIoU Loss normaliza el IoU con la diferencia de perímetros de las cajas.",
+      "GIoU Loss es invariante a la escala de las cajas y no depende de su tamaño absoluto.",
+      "GIoU Loss introduce el área del minimum bounding box para proporcionar gradientes útiles cuando no hay overlap."
+    ],
+    "answer_idx": 4
+  },
+  {
+    "id": 80,
+    "question": "Sea $z \\in \\mathbb{R}^{K}$ el vector de logits y $\\hat{y}=\\mathrm{softmax}(z)$. Considera $\\mathcal{L}(y,\\hat{y})=-\\sum_i y_i\\log\\hat{y}_i$ con one-hot $y$. Si reemplazamos $z$ por $z+c\\mathbf{1}$ con $c\\in\\mathbb{R}$:",
+    "options": [
+      "Cambia $\\hat{y}$ y también $\\nabla_z\\mathcal{L}$.",
+      "No cambia $\\hat{y}$, pero sí $\\nabla_z\\mathcal{L}$.",
+      "No cambia $\\hat{y}$ ni $\\nabla_z\\mathcal{L}$.",
+      "Cambia $\\hat{y}$ pero no $\\nabla_z\\mathcal{L}$.",
+      "Si $c>0$ entonces $\\nabla_z\\mathcal{L}$ se escala por $e^c$."
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 81,
+    "question": "¿Cuál es la principal diferencia entre BEiT y MAE?",
+    "options": [
+      "BEiT reconstruye directamente los valores RGB de los patches enmascarados; MAE predice identificadores discretos obtenidos mediante d-VAE.",
+      "MAE incorpora un momentum teacher para generar objetivos, BEiT no.",
+      "En BEiT la proporción de máscara típica es 75%, mientras MAE no puede superar el 40% sin colapsar.",
+      "BEiT predice tokens visuales discretos, mientras MAE reconstruye píxeles de los patches ocultos con un pequeño decoder.",
+      "Ambos métodos usan reconstrucción de gradientes de Sobel para capturar texturas finas."
+    ],
+    "answer_idx": 3
+  },
+  {
+    "id": 82,
+    "question": "¿Qué es DyT?",
+    "options": [
+      "Aplica una tanh escalada elemento a elemento con parámetros aprendibles, sin calcular media ni varianza.",
+      "Divide por el RMS de cada vector y conserva solo un parámetro de escala, sin desplazamiento aprendido.",
+      "Normaliza usando estadísticas del minibatch y usa running mean durante inferencia para estabilizar capas profundas.",
+      "Centra cada token restando la media de features y luego aplica una transformación afín como LayerNorm.",
+      "Usa softmax sobre features para limitar valores extremos y preservar una suma unitaria en cada representación."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 83,
+    "question": "En self-supervised contrastive learning, ¿qué comportamiento se busca inducir en el embedding space?",
+    "options": [
+      "Acercar vistas positivas y alejar vistas negativas.",
+      "Alejar todas las muestras entre sí por igual.",
+      "Hacer que todas las representaciones colapsen al mismo vector.",
+      "Eliminar cualquier invariancia aprendida por el encoder.",
+      "Optimizar únicamente la reconstrucción exacta de los píxeles."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 84,
+    "question": "Para el Triplet Loss $L=\\max(0,\\|a-p\\|_2^2-\\|a-n\\|_2^2+\\alpha)$, ¿cuándo un triplet deja de contribuir al gradiente?",
+    "options": [
+      "Cuando $\\|a-p\\|_2^2 > \\|a-n\\|_2^2$ sin importar $\\alpha$.",
+      "Cuando $\\|a-p\\|_2^2+\\alpha \\leq \\|a-n\\|_2^2$.",
+      "Cuando $\\|a-p\\|_2^2=\\|a-n\\|_2^2$.",
+      "Cuando el positivo y el negativo son de la misma clase.",
+      "Siempre que $\\alpha>0$."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 85,
+    "question": "En instance discrimination, si todos los embeddings están normalizados con norma L2 igual a 1, ¿qué representa el producto punto $v_i^T v$?",
+    "options": [
+      "La distancia Manhattan.",
+      "La similitud de Jaccard.",
+      "La similitud coseno.",
+      "La varianza conjunta.",
+      "La divergencia KL."
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 86,
+    "question": "En el softmax contrastivo $\\exp(s/\\tau)$, ¿qué efecto produce normalmente disminuir la temperatura $\\tau$ manteniendo las similitudes fijas?",
+    "options": [
+      "Hace la distribución más uniforme.",
+      "Elimina la dependencia de las similitudes.",
+      "Vuelve la distribución más aguda y enfatiza diferencias de similitud.",
+      "Convierte automáticamente el producto punto en distancia Euclidiana.",
+      "Hace que todos los logits sean cero."
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 87,
+    "question": "¿Por qué la formulación original de instance discrimination resulta costosa en datasets grandes?",
+    "options": [
+      "Porque necesita reconstruir cada imagen píxel a píxel.",
+      "Porque cada consulta debe compararse con los embeddings de todas las instancias del dataset.",
+      "Porque requiere un Transformer autoregresivo por cada imagen.",
+      "Porque no permite normalización L2.",
+      "Porque usa únicamente ejemplos positivos."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 88,
+    "question": "¿Cuál es la idea central de Noise-Contrastive Estimation (NCE) presentada en las diapositivas?",
+    "options": [
+      "Convertir estimación de densidad en clasificación binaria entre datos reales y ruido.",
+      "Sustituir cualquier función de pérdida por MSE.",
+      "Comparar exclusivamente dos augmentations de una misma imagen.",
+      "Eliminar la distribución de ruido del entrenamiento.",
+      "Resolver clasificación multiclase mediante clustering jerárquico."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 89,
+    "question": "En NCE, por cada muestra real se generan exactamente $k$ muestras de ruido. Si se parten de $N$ muestras reales, ¿cuántos ejemplos negativos y cuántos ejemplos totales se obtienen?",
+    "options": [
+      "$N$ negativos y $2N$ totales.",
+      "$k$ negativos y $N+k$ totales.",
+      "$Nk$ negativos y $N(k+1)$ totales.",
+      "$N/k$ negativos y $2N/k$ totales.",
+      "$N(k-1)$ negativos y $Nk$ totales."
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 90,
+    "question": "Bajo el esquema NCE con una muestra real por cada $k$ muestras de ruido, ¿cuáles son las probabilidades a priori de las clases real y ruido?",
+    "options": [
+      "$\\pi_1=1/2$ y $\\pi_0=1/2$.",
+      "$\\pi_1=k/(k+1)$ y $\\pi_0=1/(k+1)$.",
+      "$\\pi_1=1/(k+1)$ y $\\pi_0=k/(k+1)$.",
+      "$\\pi_1=1/k$ y $\\pi_0=1-1/k^2$.",
+      "$\\pi_1=N/(N+k)$ y $\\pi_0=k/(N+k)$."
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 91,
+    "question": "La información mutua puede escribirse como $I(X;Y)=D_{KL}(p(x,y)\\|p(x)p(y))$. ¿Qué se deduce si $X$ e $Y$ son independientes?",
+    "options": [
+      "$I(X;Y)$ es máxima.",
+      "$I(X;Y)=0$.",
+      "$I(X;Y)=\\log 2$ siempre.",
+      "$I(X;Y)$ depende solo de la varianza de $X$.",
+      "$I(X;Y)$ se vuelve negativa."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 92,
+    "question": "En InfoNCE con $K$ candidatos para una query, ¿cómo se estructura normalmente el conjunto de comparación?",
+    "options": [
+      "$K$ positivos y ningún negativo.",
+      "Un positivo y $K-1$ negativos.",
+      "Dos positivos y dos negativos independientemente de $K$.",
+      "Solo negativos; el positivo se usa fuera de la loss.",
+      "Un único par sin denominador de normalización."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 93,
+    "question": "La cota presentada para InfoNCE es $I(X;Y)\\geq \\log K-L_{InfoNCE}$. Si la loss se mantiene constante y aumenta $K$, ¿qué sucede con la cota inferior?",
+    "options": [
+      "Disminuye linealmente con $K$.",
+      "Permanece exactamente igual.",
+      "Aumenta porque crece $\\log K$.",
+      "Se vuelve necesariamente negativa.",
+      "Deja de depender de la información mutua."
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 94,
+    "question": "¿Cuál es una limitación práctica de InfoNCE señalada en las diapositivas?",
+    "options": [
+      "No puede usar similitud coseno.",
+      "Necesita batches grandes para disponer de suficientes negativos y diversidad.",
+      "No admite encoders neuronales.",
+      "Requiere etiquetas humanas para todos los negativos.",
+      "Solo funciona con texto."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 95,
+    "question": "CLIP entrena con $N$ pares imagen-texto. ¿Por qué su loss se considera simétrica?",
+    "options": [
+      "Porque usa simultáneamente MSE y MAE.",
+      "Porque promedia un término imagen→texto y otro texto→imagen.",
+      "Porque emplea exactamente dos encoders con los mismos pesos.",
+      "Porque todas las similitudes positivas y negativas reciben el mismo target.",
+      "Porque aplica dos temperaturas idénticas, una positiva y una negativa."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 96,
+    "question": "En CLIP, ¿qué relación debe aprenderse entre el par correcto $(I_i,T_i)$ y un texto incorrecto $T_j$, $i\\neq j$?",
+    "options": [
+      "$sim(f(I_i),g(T_i))$ baja y $sim(f(I_i),g(T_j))$ alta.",
+      "Ambas similitudes deben ser idénticas.",
+      "$sim(f(I_i),g(T_i))$ alta y $sim(f(I_i),g(T_j))$ baja.",
+      "Solo importa la norma de los embeddings, no su similitud.",
+      "Las similitudes negativas deben fijarse exactamente en cero."
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 97,
+    "question": "¿Cuál es la diferencia principal entre SigLIP y CLIP/InfoNCE según las diapositivas?",
+    "options": [
+      "SigLIP elimina los embeddings de texto.",
+      "SigLIP usa una BCE sigmoidal independiente por par imagen-texto en vez de un softmax global contrastivo.",
+      "SigLIP necesita obligatoriamente un batch global mayor que CLIP.",
+      "SigLIP solo entrena con pares positivos.",
+      "SigLIP reemplaza la similitud entre embeddings por reconstrucción de píxeles."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 98,
+    "question": "Para dos regiones $A$ y $B$, ¿qué mide IoU?",
+    "options": [
+      "$|A\\cap B|/|A\\cup B|$.",
+      "$|A\\cup B|/|A\\cap B|$.",
+      "$2|A\\cap B|/(|A|+|B|)$.",
+      "$|A-B|/|B|$.",
+      "$|A|+|B|$ sin considerar la intersección."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 99,
+    "question": "Si $IoU=0.5$, usando $Dice=\\frac{2IoU}{1+IoU}$, ¿cuál es aproximadamente el Dice?",
+    "options": [
+      "0.25",
+      "0.50",
+      "0.67",
+      "0.75",
+      "1.00"
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 100,
+    "question": "Para un solapamiento no perfecto con $0<IoU<1$, ¿qué relación muestran las diapositivas entre Dice e IoU?",
+    "options": [
+      "$Dice<IoU$ siempre.",
+      "$Dice=IoU$ siempre.",
+      "$Dice>IoU$.",
+      "$Dice=1-IoU$.",
+      "No existe relación monótona entre ambas."
+    ],
+    "answer_idx": 2
+  },
+  {
+    "id": 101,
+    "question": "En un autoencoder, ¿qué función conceptual cumple el bottleneck $z$?",
+    "options": [
+      "Obliga al modelo a comprimir la entrada y capturar características relevantes.",
+      "Duplica la resolución espacial antes del encoder.",
+      "Almacena exclusivamente las etiquetas ground truth.",
+      "Convierte automáticamente el problema en clasificación.",
+      "Elimina la necesidad del decoder."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 102,
+    "question": "¿Cuál es la causa señalada para los checkerboard artifacts en transposed convolution?",
+    "options": [
+      "La normalización L2 de los kernels.",
+      "Una distribución espacial no uniforme de la influencia de la operación de upsampling.",
+      "El uso de sigmoid en la salida.",
+      "La ausencia de padding en todas las capas.",
+      "El exceso de clases en segmentación."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 103,
+    "question": "Pixel Shuffle recibe un tensor $[N,r^2C,H,W]$. ¿Qué shape produce después del reordenamiento?",
+    "options": [
+      "$[N,rC,H,rW]$",
+      "$[N,C,rH,rW]$",
+      "$[N,r^2C,H/r,W/r]$",
+      "$[N,C,H,W]$",
+      "$[N,Cr,H/r,W/r]$"
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 104,
+    "question": "¿Qué hace ICNR initialization para reducir patrones periódicos al usar Pixel Shuffle?",
+    "options": [
+      "Inicializa cada sub-kernel de forma independiente y aleatoria.",
+      "Inicializa un kernel base y lo replica $r^2$ veces en los grupos que serán shufflados.",
+      "Fuerza todas las activaciones a cero durante la primera época.",
+      "Sustituye Pixel Shuffle por nearest-neighbor interpolation.",
+      "Duplica el número de canales después del shuffle."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 105,
+    "question": "¿Por qué las skip-connections son importantes en U-Net?",
+    "options": [
+      "Porque reemplazan completamente al decoder.",
+      "Porque copian features tempranas hacia el decoder y ayudan a recuperar detalles espaciales finos.",
+      "Porque eliminan el downsampling del encoder.",
+      "Porque convierten segmentación en detección.",
+      "Porque fuerzan que todas las capas tengan la misma resolución."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 106,
+    "question": "¿Qué problema intenta resolver principalmente una Feature Pyramid Network (FPN)?",
+    "options": [
+      "Detectar objetos de distintas escalas combinando features de varios niveles.",
+      "Eliminar por completo el backbone convolucional.",
+      "Convertir cajas en máscaras one-hot.",
+      "Evitar cualquier operación de upsampling.",
+      "Sustituir la clasificación por reconstrucción."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 107,
+    "question": "En DETR, ¿qué papel cumplen los object queries?",
+    "options": [
+      "Son filtros convolucionales fijos del backbone.",
+      "Son representaciones vectoriales que permiten al decoder buscar qué objetos existen y dónde están.",
+      "Son anchors geométricos predefinidos.",
+      "Son exclusivamente las clases one-hot del dataset.",
+      "Son mapas de segmentación producidos por el encoder."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 108,
+    "question": "¿Qué combinación caracteriza al DETR original presentado en las diapositivas?",
+    "options": [
+      "Usa anchors y NMS obligatoriamente.",
+      "No usa anchors y no necesita NMS como etapa posterior.",
+      "Usa anchors, pero no clasificación.",
+      "No usa Transformer decoder.",
+      "Solo predice máscaras y no bounding boxes."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 109,
+    "question": "En la loss de DETR, ¿cuándo se aplican los términos de regresión de bounding box L1 y GIoU?",
+    "options": [
+      "A todas las queries, incluso las asignadas a 'no objeto'.",
+      "Solo a las predicciones correspondientes a clases no nulas.",
+      "Únicamente cuando IoU es exactamente 1.",
+      "Solo durante inferencia.",
+      "Nunca se combinan con clasificación."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 110,
+    "question": "¿Por qué GIoU puede ser más útil que IoU como loss cuando dos cajas no se superponen?",
+    "options": [
+      "Porque IoU se vuelve mayor que 1.",
+      "Porque GIoU incorpora la caja mínima que contiene ambas y puede reflejar desalineamiento aun con IoU=0.",
+      "Porque GIoU ignora completamente la geometría.",
+      "Porque GIoU solo depende de las clases.",
+      "Porque IoU no puede calcularse con coordenadas normalizadas."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 111,
+    "question": "¿Cuál es la idea distintiva del YOLO original mostrada en las diapositivas?",
+    "options": [
+      "Proponer regiones y clasificarlas en una segunda etapa.",
+      "Hacer una predicción unificada de cajas y clases a partir de una cuadrícula $S\\times S$.",
+      "Usar únicamente segmentación semántica.",
+      "Generar una secuencia autoregresiva de cajas.",
+      "Usar exclusivamente object queries aprendidos."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 112,
+    "question": "En YOLO, si una caja tiene $P_{obj}=0.8$ e $IoU=0.75$, ¿cuál es su confidence score según la definición de las diapositivas?",
+    "options": [
+      "0.05",
+      "0.60",
+      "0.75",
+      "0.80",
+      "1.55"
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 113,
+    "question": "Según la definición de atención presentada, ¿qué describe mejor el mecanismo de atención?",
+    "options": [
+      "Una selección dinámica de entradas mediante ponderaciones adaptativas según su importancia.",
+      "Una convolución fija aplicada uniformemente a todas las regiones.",
+      "Un mecanismo que elimina cualquier diferencia entre entradas.",
+      "Un proceso que asigna pesos aleatorios sin entrenamiento.",
+      "Una técnica exclusiva de visión biológica."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 114,
+    "question": "En soft attention de Show, Attend and Tell, el vector de contexto se expresa como $z=\\sum_i p_i v_i$. ¿Qué representa esta operación?",
+    "options": [
+      "Una combinación ponderada de features visuales.",
+      "Una selección obligatoriamente discreta de una sola región.",
+      "Una convolución transpuesta.",
+      "Un promedio sin pesos de todos los píxeles originales.",
+      "Una normalización por canales."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 115,
+    "question": "Si en soft attention existen $L$ ubicaciones y todos los pesos son iguales, $p_i=1/L$, ¿qué se obtiene con $z=\\sum_i p_i v_i$?",
+    "options": [
+      "El máximo de las features.",
+      "El promedio de las features $v_i$.",
+      "El primer vector $v_1$.",
+      "Un vector de ceros.",
+      "La concatenación de las $L$ features."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 116,
+    "question": "En Squeeze-and-Excitation, ¿qué operación realiza la fase de 'squeeze'?",
+    "options": [
+      "Global average pooling para resumir cada canal.",
+      "Max pooling espacial para duplicar la resolución.",
+      "Self-attention global entre todos los píxeles.",
+      "Convolución transpuesta por canal.",
+      "Softmax entre clases."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 117,
+    "question": "¿Qué produce la etapa de 'excitation' en un bloque Squeeze-and-Excitation?",
+    "options": [
+      "Pesos por canal obtenidos mediante reducción-expansión y sigmoid.",
+      "Una máscara binaria espacial de tamaño $H\\times W$ exclusivamente.",
+      "Nuevos parches no solapados.",
+      "Una matriz de atención $N\\times N$ entre tokens.",
+      "Bounding boxes normalizadas."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 118,
+    "question": "¿Cómo combina CBAM sus dos mecanismos de atención?",
+    "options": [
+      "Aplica primero channel attention y luego spatial attention de forma secuencial.",
+      "Aplica solo spatial attention.",
+      "Aplica únicamente channel attention.",
+      "Suma una máscara aleatoria a las activaciones.",
+      "Sustituye toda la CNN por un ViT."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 119,
+    "question": "En el channel attention de CBAM, ¿qué información se usa para resumir cada canal?",
+    "options": [
+      "Average Pooling y Max Pooling, seguidos por un MLP compartido.",
+      "Únicamente el píxel central.",
+      "Una convolución $7\\times7$ sobre las clases.",
+      "El token [CLS].",
+      "Un histograma de gradientes."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 120,
+    "question": "En el spatial attention de CBAM, ¿cómo se genera el mapa espacial?",
+    "options": [
+      "Se hace pooling sobre la dimensión de canales, se concatenan los mapas y se aplica una conv $7\\times7$ seguida de sigmoid.",
+      "Se usa global average pooling y dos capas fully-connected sin información espacial.",
+      "Se divide la imagen en patches y se agrega un token [CLS].",
+      "Se calcula GIoU entre regiones.",
+      "Se aplica únicamente LayerNorm."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 121,
+    "question": "En ViT, para una imagen $H\\times W$ dividida en patches $P\\times P$, ¿cuántos tokens de patch se generan antes de añadir [CLS]?",
+    "options": [
+      "$N=H+W+P$",
+      "$N=HW/P^2$",
+      "$N=P^2/(HW)$",
+      "$N=HWP$",
+      "$N=(H+W)/P$"
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 122,
+    "question": "Antes de la proyección lineal de ViT, ¿cuál es la dimensión de un patch aplanado si tiene tamaño $P\\times P$ y $C$ canales?",
+    "options": [
+      "$P+C$",
+      "$P^2C$",
+      "$PC^2$",
+      "$HWC$",
+      "$D(P+C)$"
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 123,
+    "question": "Si ViT tiene $N$ patches y cada embedding tiene dimensión $D$, ¿qué shape tiene la secuencia justo después de concatenar el token [CLS]?",
+    "options": [
+      "$[N,D]$",
+      "$[N+1,D]$",
+      "$[D,N]$",
+      "$[N,P^2C]$",
+      "$[N+1,P^2C]$"
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 124,
+    "question": "¿Qué shape deben tener los learned absolute positional embeddings de ViT para poder sumarse a la secuencia con [CLS]?",
+    "options": [
+      "$[N,D]$",
+      "$[N+1,D]$",
+      "$[D,D]$",
+      "$[P,P,C]$",
+      "$[1,N]$"
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 125,
+    "question": "Según el bloque ViT mostrado, ¿qué patrón de residual y normalización se utiliza?",
+    "options": [
+      "$Z'_l=MHSA(LN(Z_{l-1}))+Z_{l-1}$ y luego $Z_l=MLP(LN(Z'_l))+Z'_l$.",
+      "$Z'_l=LN(MHSA(Z_{l-1})+Z_{l-1})$ y no existe FFN.",
+      "$Z_l=MHSA(MLP(Z_{l-1}))$ sin residual.",
+      "$Z_l=Conv(Z_{l-1})+Pool(Z_{l-1})$.",
+      "$Z_l=Softmax(Z_{l-1})$."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 126,
+    "question": "¿Por qué Swin Transformer alterna W-MSA con SW-MSA?",
+    "options": [
+      "Para permitir comunicación entre ventanas distintas sin usar atención global completa.",
+      "Para impedir cualquier interacción entre regiones.",
+      "Para eliminar la jerarquía espacial.",
+      "Para que todos los tokens usen el mismo embedding posicional.",
+      "Para reemplazar el patch merging."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 127,
+    "question": "En patch merging de Swin, partiendo de $[B,H,W,C]$, ¿qué shape se obtiene después de agrupar bloques $2\\times2$ y proyectar de $4C$ a $2C$?",
+    "options": [
+      "$[B,H,W,2C]$",
+      "$[B,H/2,W/2,2C]$",
+      "$[B,H/2,W/2,4C]$",
+      "$[B,2H,2W,C/2]$",
+      "$[B,H/4,W/4,C]$"
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 128,
+    "question": "¿Qué ventaja busca la scaled cosine attention de Swin Transformer V2 frente al producto punto sin normalizar?",
+    "options": [
+      "Acotar la similitud mediante normalización L2 de $q$ y $k$, desacoplarla de sus normas y controlar la agudeza con una temperatura aprendible.",
+      "Eliminar completamente el softmax.",
+      "Forzar que todos los logits sean iguales.",
+      "Reemplazar la atención por convoluciones depthwise.",
+      "Eliminar el relative position bias."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 129,
+    "question": "¿Qué caracteriza al sinusoidal positional encoding original?",
+    "options": [
+      "Usa embeddings fijos seno/coseno con distintas frecuencias y no requiere parámetros posicionales aprendibles.",
+      "Aprende un vector independiente para cada posición.",
+      "Solo puede representar posiciones relativas.",
+      "Se aplica únicamente a Values.",
+      "Necesita una tabla de tamaño $[max\\_len,n\\_dim]$ entrenable."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 130,
+    "question": "¿Cuál es una limitación de learned absolute positional embeddings respecto al sinusoidal encoding según las diapositivas?",
+    "options": [
+      "No pueden sumarse a embeddings de tokens.",
+      "Son flexibles, pero no extrapolan naturalmente a posiciones fuera del rango entrenado.",
+      "No contienen parámetros entrenables.",
+      "Solo funcionan con CNNs.",
+      "No permiten usar atención."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 131,
+    "question": "En relative position embeddings tipo Shaw et al., ¿de qué depende el término posicional $a_{i-j}$?",
+    "options": [
+      "Del valor absoluto del token únicamente.",
+      "De la distancia relativa $i-j$ entre query y key.",
+      "De la clase de la secuencia.",
+      "Del número total de heads.",
+      "De la norma del Value."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 132,
+    "question": "¿Por qué RoPE incorpora información relativa aunque rote Q y K usando posiciones absolutas?",
+    "options": [
+      "Porque en el producto punto las fases se combinan principalmente mediante la diferencia $p-q$.",
+      "Porque reemplaza todas las queries por la misma query.",
+      "Porque usa una tabla aprendible $a_{i-j}$.",
+      "Porque no modifica Q ni K.",
+      "Porque elimina la posición del score final."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 133,
+    "question": "¿Qué problema intenta resolver RoPE scaling?",
+    "options": [
+      "Reducir el número de clases.",
+      "Extender el contexto más allá del rango observado ajustando posiciones, frecuencias o ambas.",
+      "Eliminar completamente las rotaciones.",
+      "Convertir attention en una CNN.",
+      "Aumentar el número de KV heads."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 134,
+    "question": "En Partial RoPE se define $d_{RoPE}=\\rho d_{head}$. ¿Qué ocurre si $\\rho=0$?",
+    "options": [
+      "Se obtiene Full RoPE.",
+      "El head no utiliza RoPE.",
+      "Solo Values reciben rotación.",
+      "La dimensión del head se duplica.",
+      "Todas las dimensiones son posicionales."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 135,
+    "question": "¿Cómo puede un Transformer causal NoPE aprender información posicional aun sin embeddings o rotaciones explícitas?",
+    "options": [
+      "La máscara causal hace que cada posición tenga acceso a un conjunto distinto de estados previos.",
+      "Porque todas las posiciones reciben el mismo vector posicional fijo.",
+      "Porque usa convoluciones recurrentes ocultas obligatoriamente.",
+      "Porque el softmax codifica automáticamente el índice absoluto.",
+      "Porque Values contienen un contador de posición."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 136,
+    "question": "Para una secuencia de longitud $n$ y dimensión $d$, ¿cuál es la complejidad indicada para self-attention estándar?",
+    "options": [
+      "Cómputo $O(nd)$ y memoria $O(n)$.",
+      "Cómputo $O(n^2d)$ y memoria $O(n^2)$.",
+      "Cómputo $O(d^2)$ y memoria $O(d)$.",
+      "Cómputo $O(\\log n)$ y memoria $O(1)$.",
+      "Cómputo $O(n^3)$ y memoria $O(n^3)$."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 137,
+    "question": "En MQA, si MHA usa $H_q$ heads de K/V y MQA usa un solo head de K/V, ¿aproximadamente por qué factor se reduce el KV cache respecto a MHA?",
+    "options": [
+      "$2H_q$",
+      "$H_q$",
+      "$\\sqrt{H_q}$",
+      "$1/H_q$",
+      "No se reduce."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 138,
+    "question": "En GQA, si hay $H_q$ query heads y $H_{KV}$ heads de K/V, con $g=H_q/H_{KV}$ queries por grupo, ¿por qué factor aproximado se reduce el KV cache frente a MHA?",
+    "options": [
+      "$g$",
+      "$H_{KV}^2$",
+      "$1/g$",
+      "$2g^2$",
+      "No cambia."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 139,
+    "question": "¿Cuáles son las dos ideas principales de Multi-head Latent Attention (MLA) señaladas en las diapositivas?",
+    "options": [
+      "Compresión conjunta de Keys/Values y RoPE desacoplado.",
+      "Eliminar Queries y usar solo Values.",
+      "Duplicar el KV cache y usar atención global.",
+      "Sustituir el decoder por una CNN.",
+      "Usar una única capa lineal sin posiciones."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 140,
+    "question": "¿Qué propiedad conserva RMSNorm pero pierde al eliminar el centrado de LayerNorm?",
+    "options": [
+      "Conserva invariancia a desplazamientos aditivos y pierde invariancia de escala.",
+      "Conserva invariancia frente a cambios positivos de escala, pero pierde invariancia a desplazamientos aditivos.",
+      "Pierde ambas invariancias necesariamente.",
+      "Conserva únicamente invariancia a permutaciones de tokens.",
+      "Conserva únicamente invariancia a rotaciones."
+    ],
+    "answer_idx": 1
+  },
+  {
+    "id": 141,
+    "question": "¿Qué busca QK-Norm al normalizar Queries y Keys antes del producto punto?",
+    "options": [
+      "Convertir el producto en una similitud coseno acotada y controlar después la escala con un parámetro aprendible.",
+      "Eliminar los Values del mecanismo.",
+      "Forzar todos los logits a ser positivos.",
+      "Sustituir RMSNorm en todo el Transformer.",
+      "Hacer que cada query atienda solo a sí misma."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 142,
+    "question": "DyT aplica $DyT(x)=\\gamma\\odot\\tanh(\\alpha x)+\\beta$. ¿Qué ventaja conceptual destaca la diapositiva?",
+    "options": [
+      "Limita valores extremos mediante saturación sin calcular media, varianza ni RMS.",
+      "Necesita estadísticas del minibatch en inferencia.",
+      "Hace que todas las activaciones tengan norma exactamente 1.",
+      "Solo puede usarse después del output head.",
+      "Elimina los parámetros aprendibles."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 143,
+    "question": "¿Qué diferencia estructural tiene un Gated FFN respecto a un FFN convencional?",
+    "options": [
+      "Usa dos ramas internas, una de contenido y otra de gating, por lo que incorpora una tercera proyección.",
+      "Elimina toda no linealidad.",
+      "No contiene proyección de salida.",
+      "Siempre usa una sola matriz de pesos.",
+      "Mezcla tokens mediante atención global."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 144,
+    "question": "¿Por qué suele reducirse la dimensión intermedia de SwiGLU respecto al $4d_{model}$ típico de un FFN clásico?",
+    "options": [
+      "Porque SwiGLU usa tres proyecciones y se busca mantener parámetros y costo comparables.",
+      "Porque SwiGLU no tiene parámetros.",
+      "Porque la activación SiLU exige dimensión menor que 1.",
+      "Porque solo procesa un token de cada cuatro.",
+      "Porque el residual duplica automáticamente la dimensión."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 145,
+    "question": "¿Qué aporta la residual connection $x_{l+1}=x_l+F_l(x_l)$ en un Transformer profundo?",
+    "options": [
+      "Una ruta identidad que preserva información y proporciona un camino directo para el gradiente.",
+      "Una eliminación completa del gradiente.",
+      "Una reducción obligatoria de la dimensión a la mitad.",
+      "Una atención entre todos los layers anteriores.",
+      "Una normalización de batch implícita."
+    ],
+    "answer_idx": 0
+  },
+  {
+    "id": 146,
+    "question": "¿Cuál es el trade-off principal entre Full Attention Residuals y Block Attention Residuals?",
+    "options": [
+      "Full AttnRes conserva cada sublayer como fuente separada con mayor granularidad pero memoria $O(Ld)$; Block AttnRes agrupa sublayers y reduce memoria a $O(Nd)$.",
+      "Block AttnRes siempre usa más memoria que Full AttnRes.",
+      "Full AttnRes elimina el softmax sobre profundidad.",
+      "Ambos tienen exactamente la misma granularidad y memoria.",
+      "Block AttnRes requiere almacenar cada representación individual de todas las sublayers."
+    ],
+    "answer_idx": 0
+  }
+]
